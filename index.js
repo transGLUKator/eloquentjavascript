@@ -17,3 +17,24 @@ function sum(arr) {
         return prev + cur;
     });
 }
+
+//Reversing an array
+function reverseArray(arr){
+    var tempArr = [];
+
+    arr.map(function(item){
+        tempArr.unshift(item);
+    });
+
+    return tempArr;
+}
+
+function reverseArrayInPlace(arr){
+    var initialLength = arr.length;
+
+    arr.map(function(item, index, ar){
+        return arr.push(ar[initialLength - index - 1]);
+    });
+
+    arr.splice(0, initialLength);
+}
