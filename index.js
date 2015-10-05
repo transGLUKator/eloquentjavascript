@@ -104,3 +104,11 @@ function deepEqual(object1, object2) {
     }
     return true;
 }
+
+//HIGHER ORDER FUNCTIONS
+//Flattening
+function flatten(arr){
+    return arr.reduce(function(prev, cur){
+        return prev.concat(cur);
+    });
+}
