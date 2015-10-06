@@ -46,14 +46,14 @@ var ANCESTRY_FILE = "[\n  " + [
 function greaterThen(n) {
     return function (m) {
         return m > n;
-    }
+    };
 }
 
 function noisy(f) {
     return function (arg) {
         var val = f(arg);
         return val;
-    }
+    };
 }
 
 function average(arr, key) {
@@ -78,7 +78,7 @@ var ancestors = JSON.parse(ANCESTRY_FILE);
 
 var young = ancestors.filter(function (person) {
     return person.born > 1800;
-})
+});
 
 var overNinty = ancestors.filter(function (person) {
     return person.died - person.born > 90;
@@ -88,8 +88,26 @@ var overNinty = ancestors.filter(function (person) {
 
 var oldest = ancestors.reduce(function (prev, cur) {
     return prev.born < cur.born ? prev : cur;
-})
+});
 
 var avgMen = average(ancestors.filter(filterMen).map(mapAge));
 
-var avgWomen = average(ancestors.filter(filterWomen).map(mapAge))
+var avgWomen = average(ancestors.filter(filterWomen).map(mapAge));
+
+//Chapter 6: The secret life of objects
+
+function rowHeights(rows) {
+    return rows.map(function (row) {
+        return row.reduce(function (max, cell) {
+            return Math.max(max, cell.minHeight());
+        }, 0);
+    });
+}
+
+function colWidths(rows) {
+    return rows[0].map(function (_, i) {
+        return rows.reduce(function (max, row) {
+            return Math.max(max, row[i].minWidth());
+        }, 0);
+    });
+}
