@@ -74,16 +74,14 @@ function deepEqual(object1, object2) {
     for (var propName in object1) {
         if (object1.hasOwnProperty(propName) != object2.hasOwnProperty(propName)) {
             return false;
-        }
-        else if (typeof object1[propName] != typeof object2[propName]) {
+        } else if (typeof object1[propName] != typeof object2[propName]) {
             return false;
         }
     }
     for (var propName in object2) {
         if (object1.hasOwnProperty(propName) != object2.hasOwnProperty(propName)) {
             return false;
-        }
-        else if (typeof object1[propName] != typeof object2[propName]) {
+        } else if (typeof object1[propName] != typeof object2[propName]) {
             return false;
         }
 
@@ -93,12 +91,10 @@ function deepEqual(object1, object2) {
         if (object1[propName] instanceof Array && object2[propName] instanceof Array) {
             if (!object1[propName].equals(object2[propName]))
                 return false;
-        }
-        else if (object1[propName] instanceof Object && object2[propName] instanceof Object) {
+        } else if (object1[propName] instanceof Object && object2[propName] instanceof Object) {
             if (!deepEqual(object1[propName], (object2[propName])))
                 return false;
-        }
-        else if (object1[propName] != object2[propName]) {
+        } else if (object1[propName] != object2[propName]) {
             return false;
         }
     }
@@ -113,7 +109,14 @@ function flatten(arr) {
     });
 }
 
-//Mother-child age difference
+//Historical life expectancy
+function average(array) {
+    function plus(a, b) {
+        return a + b;
+    }
+    return array.reduce(plus) / array.length;
+}
+
 var ANCESTRY_FILE = "[\n  " + [
         '{"name": "Carolus Haverbeke", "sex": "m", "born": 1832, "died": 1905, "father": "Carel Haverbeke", "mother": "Maria van Brussel"}',
         '{"name": "Emma de Milliano", "sex": "f", "born": 1876, "died": 1956, "father": "Petrus de Milliano", "mother": "Sophia van Damme"}',
@@ -159,18 +162,48 @@ var ANCESTRY_FILE = "[\n  " + [
 var ancestors = JSON.parse(ANCESTRY_FILE);
 
 var byName = {};
+
 ancestors.forEach(function (person) {
     byName[person.name] = person;
 });
 
-function average(arr) {
-    return arr.reduce(function (a, b) {
-            return a + b;
-        }) / arr.length;
+var byCentury = {};
+
+ancestors.forEach(function (person) {
+    var prefix = 'century',
+        century = prefix + Math.ceil(person.died / 100);
+
+    if (!byCentury.hasOwnProperty(century)) {
+        byCentury[century] = [];
+        byCentury[century].push(person.died - person.born);
+    } else {
+        byCentury[century].push(person.died - person.born);
+    }
+});
+
+for (var century in byCentury) {
+    if (byCentury.hasOwnProperty(century)) {
+        console.log(century + ': ' + average(byCentury[century]));
+    }
 }
 
-console.log(average(ancestors.filter(function (person) {
-    return byName[person['mother']];
-}).map(function (person) {
-    return byName[person['name']].born - byName[person['mother']].born;
-})))
+//Every then some
+function every(arr, func) {
+    var i;
+
+    for (i = 0; i < arr.length; i++) {
+        if (!func(arr[i])) return false;
+    }
+
+    return true;
+}
+
+function some(arr, func) {
+    var i;
+
+    for (i = 0; i < arr.length; i++) {
+        if (func(arr[i])) return true;
+    }
+
+    return false;
+}

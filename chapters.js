@@ -46,20 +46,20 @@ var ANCESTRY_FILE = "[\n  " + [
 function greaterThen(n) {
     return function (m) {
         return m > n;
-    }
+    };
 }
 
 function noisy(f) {
     return function (arg) {
         var val = f(arg);
         return val;
-    }
+    };
 }
 
 function average(arr, key) {
     return arr.reduce(function (prev, cur) {
-            return prev + cur;
-        }) / arr.length;
+        return prev + cur;
+    }) / arr.length;
 }
 
 function filterMen(person) {
@@ -98,7 +98,7 @@ var ancestors = JSON.parse(ANCESTRY_FILE);
 
 var young = ancestors.filter(function (person) {
     return person.born > 1800;
-})
+});
 
 var overNinty = ancestors.filter(function (person) {
     return person.died - person.born > 90;
@@ -108,16 +108,26 @@ var overNinty = ancestors.filter(function (person) {
 
 var oldest = ancestors.reduce(function (prev, cur) {
     return prev.born < cur.born ? prev : cur;
-})
+});
 
 var avgMen = average(ancestors.filter(filterMen).map(mapAge));
 
 var avgWomen = average(ancestors.filter(filterWomen).map(mapAge));
 
-var byName = {};
+//Chapter 6: The secret life of objects
 
-ancestors.forEach(function (person) {
-    byName[person.name] = person;
-});
+function rowHeights(rows) {
+    return rows.map(function (row) {
+        return row.reduce(function (max, cell) {
+            return Math.max(max, cell.minHeight());
+        }, 0);
+    });
+}
 
-var ph = byName['Philibert Haverbeke'];
+function colWidths(rows) {
+    return rows[0].map(function (_, i) {
+        return rows.reduce(function (max, row) {
+            return Math.max(max, row[i].minWidth());
+        }, 0);
+    });
+}
