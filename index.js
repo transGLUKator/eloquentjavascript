@@ -230,3 +230,41 @@ Object.defineProperty(Vector.prototype, 'length', {
     return Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2));
   }
 })
+
+//Sequence interface
+function Sequence(data) {
+  this.data = data;
+  this.limit = data.length - 1;
+  this.state = -1;
+}
+
+Sequence.prototype.next = function () {
+  if (this.state <= this.limit) {
+    this.state += 1;
+    return this.data[this.state];
+  }
+}
+
+function ArraySeq(arr) {
+  Sequence.call(this, arr);
+}
+ArraySeq.prototype = Object.create(Sequence.prototype);
+ArraySeq.prototype.constructor = ArraySeq;
+
+function RangeSeq(from, to) {
+  var sequence = [],
+    i;
+  for (i = from; i <= to; i++) {
+    sequence.push(i);
+  }
+
+  Sequence.call(this, sequence);
+}
+RangeSeq.prototype = Object.create(Sequence.prototype);
+RangeSeq.prototype.constructor = RangeSeq;
+
+function logFive(seqObj) {
+  while (seqObj.state < 4 && seqObj.state < seqObj.limit) {
+    console.log(seqObj.next())
+  }
+}
