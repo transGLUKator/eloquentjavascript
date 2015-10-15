@@ -51,11 +51,21 @@ Grid.prototype.set = function (vector, value) {
   this.space[vector.x + (vector.y * this.width)] = value;
 }
 
+Grid.prototype.forEach = function (f, context) {
+  for (var y = 0; y < this.height; y++) {
+    for (var x = 0; x < this.width; x++) {
+      var value = this.space[x + y * this.width];
+      if (value != null)
+        f.call(context, value, new Vector(x, y));
+    }
+  }
+};
+
 function randomElement(array) {
   return array[Math.floor(Math.random() * array.length)];
 }
 
-function bouncingCritter() {
+function BouncingCritter() {
   this.direction = randomElement(directionNames);
 }
 
@@ -64,16 +74,62 @@ BouncingCritter.prototype.act = function (view) {
     this.direction = view.find(' ') || 's';
   }
 
-  return {type: 'move', direction: this.direction};
+  return {
+    type: 'move',
+    direction: this.direction
+  };
 }
 
 
-function elementFromChar(legend, ch){
-  if (ch === ' '){
+function elementFromChar(legend, ch) {
+  if (ch === ' ') {
     return null;
   }
 
-  var element = new Legend[ch]();
+  var element = new legend[ch]();
   element.originChar = ch;
   return element;
 }
+
+function World(map, legend) {
+  var grid = new Grid(map[0].length, map.length);
+
+  this.grid = grid;
+  this.legend = legend;
+
+  map.forEach(function (line, y) {
+    for (var x = 0; x < line.length; x++) {
+      grid.set(new Vector(x, y), elementFromChar(legend, line[x]));
+    }
+  })
+}
+
+World.prototype.toString = function () {
+  var output = '';
+  for (var y = 0; y < this.grid.height; y++) {
+    for (var x = 0; x < this.grid.width; x++) {
+      var element = this.grid.get(new Vector(x, y));
+      output += charFromElement(element);
+    }
+
+    output += '\n';
+  }
+  return output;
+}
+
+function charFromElement(element) {
+  if (element == null) {
+    return ' ';
+  } else {
+    return element.originChar;
+  }
+}
+
+function Wall() {};
+
+var world = new World(plan, {
+  '#': Wall,
+  'o': BouncingCritter
+})
+
+console.log(world.toString());
